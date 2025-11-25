@@ -90,10 +90,18 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  password: 'password',
+  role: 'role'
+};
+
 exports.Prisma.BlockScalarFieldEnum = {
   id: 'id',
   title: 'title',
-  code: 'code'
+  code: 'code',
+  userId: 'userId'
 };
 
 exports.Prisma.SortOrder = {
@@ -103,6 +111,7 @@ exports.Prisma.SortOrder = {
 
 
 exports.Prisma.ModelName = {
+  User: 'User',
   Block: 'Block'
 };
 /**
@@ -144,7 +153,6 @@ const config = {
     "db"
   ],
   "activeProvider": "sqlite",
-  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -153,13 +161,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../app/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Block {\n  id    Int    @id @default(autoincrement())\n  title String\n  code  String\n}\n",
-  "inlineSchemaHash": "46319bcb9404019a201c8c338b3be6bb242ad2050cd8cd775ff225d63be78351",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../app/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id       Int     @id @default(autoincrement())\n  username String  @unique\n  password String\n  role     String  @default(\"user\")\n  blocks   Block[]\n}\n\nmodel Block {\n  id     Int    @id @default(autoincrement())\n  title  String\n  code   String\n  user   User   @relation(fields: [userId], references: [id])\n  userId Int\n}\n",
+  "inlineSchemaHash": "9d6fb902a2cce4b0ea816a15068a41cb45a32433ee27fc427369c3c60d755185",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Block\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"code\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"blocks\",\"kind\":\"object\",\"type\":\"Block\",\"relationName\":\"BlockToUser\"}],\"dbName\":null},\"Block\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"code\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"BlockToUser\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),
