@@ -3,42 +3,46 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function CreateBlock() {
+interface Block {
+  id: number;
+  title: string;
+  code: string;
+}
+
+export default function EditForm({ block }: { block: Block }) {
   const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [code, setCode] = useState("");
+  const [title, setTitle] = useState(block.title);
+  const [code, setCode] = useState(block.code);
   const [saving, setSaving] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
 
-    await fetch("/blocks/create-action", {
+    await fetch(`/blocks/${block.id}/edit-action`, {
       method: "POST",
       body: JSON.stringify({ title, code }),
     });
 
-    router.push("/");
+    router.push(`/blocks/${block.id}`);
   }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 flex justify-center">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSave}
         className="w-full max-w-xl bg-white p-6 rounded-xl shadow space-y-4"
       >
-        <h1 className="text-2xl font-semibold text-gray-800">Create Block</h1>
+        <h1 className="text-2xl font-semibold text-gray-800">Edit Block</h1>
 
         <input
           className="w-full p-3 border rounded-lg"
-          placeholder="Block Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
 
         <textarea
           className="w-full p-3 border rounded-lg h-40"
-          placeholder="Write code here..."
           value={code}
           onChange={(e) => setCode(e.target.value)}
         />

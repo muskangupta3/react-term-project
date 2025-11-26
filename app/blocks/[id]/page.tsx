@@ -1,95 +1,47 @@
-"use client";
-
+import { prisma } from "@/database";
+import { requireUser } from "../../lib/auth";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { redirect } from "next/navigation";
 
-type Block = { id: number; title: string; code: string };
+export default async function BlockView(props: { params: Promise<{ id: string }> }) {
+  const { id } = await props.params;
 
-export default function ViewBlock() {
-  const params = useParams();
-  const id = params.id as string;
-  const router = useRouter();
-  const [block, setBlock] = useState<Block | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  await requireUser();
 
-  useEffect(() => {
-    let mounted = true;
-    async function fetchBlock() {
-      try {
-        const res = await fetch(`/api/blocks/${id}`);
-        if (!res.ok) throw new Error("Not found");
-        const data = await res.json();
-        if (mounted) setBlock(data);
-      } catch {
-        setError("Could not load block.");
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
+  const blockId = Number(id);
+  if (isNaN(blockId)) redirect("/");
 
-    fetchBlock();
-    return () => {
-      mounted = false;
-    };
-  }, [id]);
+  const block = await prisma.block.findUnique({
+    where: { id: blockId }
+  });
 
-  async function handleDelete() {
-    if (!confirm("Delete this block?")) return;
-    try {
-      const res = await fetch(`/api/blocks/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Delete failed");
-      router.push("/");
-    } catch {
-      setError("Could not delete block.");
-    }
-  }
+  if (!block) redirect("/");
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-10 px-6 flex justify-center">
-      <div className="max-w-2xl w-full space-y-6">
-        <header className="flex items-center justify-between">
+    <main className="min-h-screen bg-gray-50 py-10 px-6">
+      <div className="max-w-2xl mx-auto space-y-6 bg-white rounded-xl shadow p-6">
+        <h1 className="text-2xl font-bold text-gray-800">{block.title}</h1>
+
+        <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
+          {block.code}
+        </pre>
+
+        <div className="flex justify-between">
           <Link
-            href="/"
-            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition"
+            href={`/blocks/${block.id}/edit`}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
-            <span className="text-xl">←</span>
-            <span className="text-sm font-medium">Back to Home</span>
+            Edit
           </Link>
 
-          <div className="flex items-center gap-3">
-            <Link
-              href={`/blocks/${id}/edit`}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
-            >
-              Edit
-            </Link>
-            <button
-              onClick={handleDelete}
-              type="button"
-              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
-            >
-              Delete
-            </button>
-          </div>
-        </header>
-
-        <section className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-          {loading ? (
-            <p className="text-gray-500">Loading…</p>
-          ) : error ? (
-            <p className="text-red-600">{error}</p>
-          ) : block ? (
-            <>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">{block.title}</h2>
-              <pre className="text-gray-700 leading-relaxed font-mono whitespace-pre-wrap">{block.code}</pre>
-            </>
-          ) : (
-            <p className="text-gray-500">Block not found.</p>
-          )}
-        </section>
+          <Link
+            href="/"
+            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+          >
+            Back
+          </Link>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
