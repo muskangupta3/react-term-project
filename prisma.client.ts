@@ -1,5 +1,3 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "./app/generated/prisma";
 
-export const prisma = new PrismaClient({
-  adapter: "file:./prisma/dev.db",
-});
+export const prisma = new PrismaClient();

@@ -1,4 +1,4 @@
-import { prisma } from "@/database";
+import { prisma } from "@/prisma.client";
 import Link from "next/link";
 import { Suspense } from "react";
 import { requireUser } from "./lib/auth";
