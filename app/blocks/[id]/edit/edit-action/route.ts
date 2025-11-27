@@ -14,7 +14,7 @@ export async function POST(req: Request, { params }: Params) {
 
   await prisma.block.update({
     where: { id: Number(params.id) },
-    data: { title, code, userId }, // include userId if needed
+    data: { title, code, userId },
   });
 
   return NextResponse.json({ ok: true });

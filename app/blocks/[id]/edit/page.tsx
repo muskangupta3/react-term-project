@@ -13,7 +13,6 @@ export default async function EditPage(props: { params: Promise<{ id: string }> 
   const block = await prisma.block.findUnique({ where: { id: blockId } });
   if (!block) redirect("/");
 
-  // ⬅⬅ SERVER ACTION (THIS HANDLES THE SAVE)
   async function updateBlock(formData: FormData) {
     "use server";
 

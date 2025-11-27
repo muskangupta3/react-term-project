@@ -15,7 +15,6 @@ export default async function BlockView(props: { params: Promise<{ id: string }>
   const block = await prisma.block.findUnique({ where: { id: blockId } });
   if (!block) redirect("/");
 
-  // Server action for delete
   const handleDelete = async () => {
     "use server";
     await prisma.block.delete({ where: { id: block.id } });
@@ -26,7 +25,6 @@ export default async function BlockView(props: { params: Promise<{ id: string }>
     <main className="min-h-screen bg-gray-50 py-10 px-6">
       <div className="max-w-2xl mx-auto space-y-6 bg-white rounded-xl shadow p-6">
 
-        {/* Top Bar: Back | Edit | Delete */}
         <div className="flex justify-between items-center">
           <Link
             href="/"
@@ -47,7 +45,6 @@ export default async function BlockView(props: { params: Promise<{ id: string }>
           </div>
         </div>
 
-        {/* Block Content */}
         <h1 className="text-2xl font-bold text-gray-800">{block.title}</h1>
         <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
           {block.code}
