@@ -1,5 +1,5 @@
 import { prisma } from "@/prisma.client";
-import { requireUser } from "../../lib/auth";
+import { requireUser } from "../../login/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import DeleteButton from "../DeleteButton";

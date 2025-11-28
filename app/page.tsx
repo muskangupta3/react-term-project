@@ -1,7 +1,7 @@
 import { prisma } from "@/prisma.client";
 import Link from "next/link";
 import { Suspense } from "react";
-import { requireUser } from "./lib/auth";
+import { requireUser } from "./login/auth";
 
 export default async function Home() {
   const userId = await requireUser();

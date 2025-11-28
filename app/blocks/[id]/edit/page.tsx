@@ -1,5 +1,5 @@
 import { prisma } from "@/prisma.client";
-import { requireUser } from "../../../lib/auth";
+import { requireUser } from "../../../login/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -32,7 +32,6 @@ export default async function EditPage(props: { params: Promise<{ id: string }> 
       <div className="max-w-2xl mx-auto space-y-6 bg-white rounded-xl shadow p-6">
         <h1 className="text-2xl font-bold text-gray-800">Edit Block</h1>
 
-        {/* FIX → Use server action directly */}
         <form action={updateBlock} className="space-y-4">
           <input
             type="text"

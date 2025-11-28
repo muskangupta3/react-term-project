@@ -6,11 +6,11 @@ import { redirect } from "next/navigation";
 
 // ---------------- LOGIN ----------------
 export async function handleLogin(formData: FormData) {
-  const username = formData.get("email") as string;
+  const username = formData.get("username") as string;
   const password = formData.get("password") as string;
 
   if (!username || !password) {
-    return new Response("Missing credentials", { status: 400 });
+    return { error: "Missing credentials" };
   }
 
   const foundUser = await prisma.user.findUnique({
@@ -18,7 +18,7 @@ export async function handleLogin(formData: FormData) {
   });
 
   if (!foundUser || foundUser.password !== password) {
-    return new Response("Invalid username or password", { status: 401 });
+    return { error: "Invalid username or password" };
   }
 
   (await cookies()).set("user_id", String(foundUser.id), {
@@ -26,7 +26,7 @@ export async function handleLogin(formData: FormData) {
     path: "/",
   });
 
-  return redirect("/");
+  return { success: true };
 }
 
 // ---------------- CREATE ----------------
