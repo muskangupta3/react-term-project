@@ -1,4 +1,4 @@
-import { prisma } from "@/prisma.client";
+import { prisma } from "@/database";
 import { requireUser } from "../../login/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";

@@ -13,15 +13,22 @@ export default function LoginPage() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const result = await handleLogin(formData);
 
-    if (result?.error) {
-      setError(result.error);
+    try {
+      const result = await handleLogin(formData); // call server action
+
+      if ("error" in result) {
+        //setError(result?.error);
+        setLoading(false);
+        return;
+      }
+
+      // success → navigate manually
+      window.location.href = "/";
+    } catch (err) {
+      setError("Something went wrong");
       setLoading(false);
-      return;
     }
-
-    window.location.href = "/";
   }
 
   return (
@@ -29,36 +36,14 @@ export default function LoginPage() {
       <h1 className="text-xl font-bold mb-4">Login</h1>
 
       <form onSubmit={onSubmit} className="flex flex-col gap-3">
-        <input
-          name="username"
-          type="text"
-          placeholder="Username"
-          className="border p-2 rounded"
-          required
-        />
-
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          className="border p-2 rounded"
-          required
-        />
-
-        <button
-          type="submit"
-          className="bg-blue-600 text-white p-2 rounded"
-          disabled={loading}
-        >
+        <input name="username" type="text" placeholder="Username" className="border p-2 rounded" required />
+        <input name="password" type="password" placeholder="Password" className="border p-2 rounded" required />
+        <button type="submit" className="bg-blue-600 text-white p-2 rounded" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
 
-      {error && (
-        <p className="text-red-600 text-sm mt-2">
-          {error}
-        </p>
-      )}
+      {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
     </div>
   );
 }

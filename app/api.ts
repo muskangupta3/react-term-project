@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/prisma.client";
+import { prisma } from "@/database";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
