@@ -4,6 +4,14 @@ import { prisma } from "@/database";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+// ---------------- HANDLE AUTHENTICATION ----------------
+export async function requireUser() {
+  const cookieStore = await cookies();
+  const userId = cookieStore.get("user_id")?.value;
+  if (!userId) redirect("/login");
+  return Number(userId);
+}
+
 // ---------------- LOGIN ----------------
 export async function handleLogin(formData: FormData) {
   const username = formData.get("username") as string;

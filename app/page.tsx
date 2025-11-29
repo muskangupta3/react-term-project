@@ -1,31 +1,58 @@
 import { prisma } from "@/database";
 import Link from "next/link";
 import { Suspense } from "react";
-import { requireUser } from "./login/auth";
+import { requireUser } from "./api";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
+// ---LOGOUT ---
+async function logout() {
+  "use server";
+  (await cookies()).delete("user_id");
+  redirect("/login");
+}
+
 
 export default async function Home() {
   const userId = await requireUser();
 
   return (
     <Suspense fallback={<SkeletonBlocks />}>
-      <BlocksList userId={userId} />
+      <BlocksList userId={userId} logoutAction={logout} />
     </Suspense>
   );
 }
 
-async function BlocksList({ userId }: { userId: number }) {
+async function BlocksList({
+  userId,
+  logoutAction,
+}: {
+  userId: number;
+  logoutAction: () => Promise<void>;
+}) {
   const blocks = await prisma.block.findMany({
     where: { userId },
     orderBy: { id: "desc" },
   });
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-6">
+    <main className="min-h-screen bg-gray-50 py-10 px-6 relative">
+
+      <form
+        action={logoutAction}
+        className="absolute top-6 right-6"
+      >
+        <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition">
+          Logout
+        </button>
+      </form>
+
       <div className="max-w-2xl mx-auto space-y-8">
         <header className="flex items-center justify-between">
           <h1 className="text-3xl font-semibold text-gray-800">
             Code Blocks
           </h1>
+
           <Link
             href="/blocks/create"
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"

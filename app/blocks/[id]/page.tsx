@@ -1,8 +1,8 @@
 import { prisma } from "@/database";
-import { requireUser } from "../../login/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import DeleteButton from "../DeleteButton";
+import { requireUser } from "@/app/api";
 
 export default async function BlockView(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;

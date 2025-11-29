@@ -1,54 +1,56 @@
-"use client";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { prisma } from "@/database";
+import { cookies } from "next/headers";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+async function createBlock(formData: FormData) {
+  "use server";
 
-export default function CreateBlock() {
-  const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [code, setCode] = useState("");
-  const [saving, setSaving] = useState(false);
+  const title = formData.get("title") as string;
+  const code = formData.get("code") as string;
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSaving(true);
+  const userId = Number((await cookies()).get("user_id")?.value);
 
-    await fetch("/blocks/create-action", {
-      method: "POST",
-      body: JSON.stringify({ title, code }),
-    });
+  await prisma.block.create({
+    data: { title, code, userId },
+  });
 
-    router.push("/");
-  }
+  redirect("/");
+}
 
+export default function CreateBlockPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-6 flex justify-center">
       <form
-        onSubmit={handleSubmit}
+        action={createBlock}
         className="w-full max-w-xl bg-white p-6 rounded-xl shadow space-y-4"
       >
         <h1 className="text-2xl font-semibold text-gray-800">Create Block</h1>
 
         <input
+          name="title"
           className="w-full p-3 border rounded-lg"
           placeholder="Block Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          required
         />
 
         <textarea
+          name="code"
           className="w-full p-3 border rounded-lg h-40"
           placeholder="Write code here..."
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
+          required
         />
 
-        <button
-          disabled={saving}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-        >
-          {saving ? "Saving…" : "Save"}
+        <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+          Save
         </button>
+
+        <Link
+          href="/"
+          className="px-4 py-2 block text-center bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+        >
+          Cancel
+        </Link>
       </form>
     </div>
   );

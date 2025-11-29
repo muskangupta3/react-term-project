@@ -15,15 +15,14 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget);
 
     try {
-      const result = await handleLogin(formData); // call server action
+      const result = await handleLogin(formData);
 
       if ("error" in result) {
-        //setError(result?.error);
+        setError(result.error ?? null);
         setLoading(false);
         return;
       }
 
-      // success → navigate manually
       window.location.href = "/";
     } catch (err) {
       setError("Something went wrong");
