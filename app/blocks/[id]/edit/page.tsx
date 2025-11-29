@@ -19,6 +19,10 @@ export default async function EditPage(props: { params: Promise<{ id: string }> 
     const title = formData.get("title") as string;
     const code = formData.get("code") as string;
 
+    if (!title || !code) {
+      throw new Error("Both title and code are required.");
+    }
+
     await prisma.block.update({
       where: { id: blockId },
       data: { title, code },
@@ -26,6 +30,7 @@ export default async function EditPage(props: { params: Promise<{ id: string }> 
 
     redirect(`/blocks/${blockId}`);
   }
+  // ---------------------
 
   return (
     <main className="min-h-screen bg-gray-50 py-10 px-6">
@@ -38,6 +43,7 @@ export default async function EditPage(props: { params: Promise<{ id: string }> 
             name="title"
             defaultValue={block.title}
             className="w-full px-3 py-2 border rounded"
+            placeholder="Block Title"
             required
           />
 
@@ -45,23 +51,26 @@ export default async function EditPage(props: { params: Promise<{ id: string }> 
             name="code"
             defaultValue={block.code}
             className="w-full px-3 py-2 border rounded h-52"
+            placeholder="Write code here..."
             required
           />
 
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Save
-          </button>
-        </form>
+          <div className="flex gap-3">
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-center font-medium"
+            >
+              Save
+            </button>
 
-        <Link
-          href={`/blocks/${block.id}`}
-          className="px-4 py-2 block text-center bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
-        >
-          Cancel
-        </Link>
+            <Link
+              href={`/blocks/${block.id}`}
+              className="flex-1 px-4 py-2 rounded-lg bg-gray-300 text-gray-800 hover:bg-gray-400 text-center font-medium"
+            >
+              Cancel
+            </Link>
+          </div>
+        </form>
       </div>
     </main>
   );
